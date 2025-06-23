@@ -6,11 +6,27 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ProductService {
     @Autowired
     private ProductRepository repository;
+
+    public List<Product> searchByName(String name) {
+        return repository.findByNameContainingIgnoreCase(name);
+    }
+
+    public List<Product> advancedSearch(String name, String category, Double minPrice, Double maxPrice) {
+        List<Product> products = repository.findAll();
+        return products.stream()
+                .filter(p -> name == null || p.getName().toLowerCase().contains(name.toLowerCase()))
+                .filter(p -> category == null
+                        || (p.getCategory() != null && p.getCategory().equalsIgnoreCase(category)))
+                .filter(p -> minPrice == null || p.getPrice() >= minPrice)
+                .filter(p -> maxPrice == null || p.getPrice() <= maxPrice)
+                .collect(Collectors.toList());
+    }
 
     public Product saveProduct(Product product) {
         return repository.save(product);
@@ -43,10 +59,6 @@ public class ProductService {
         existingProduct.setQuantity(product.getQuantity());
         existingProduct.setPrice(product.getPrice());
         return repository.save(existingProduct);
-    }
-
-    public List<Product> searchByName(String name) {
-        return repository.findByNameContainingIgnoreCase(name);
     }
 
 }

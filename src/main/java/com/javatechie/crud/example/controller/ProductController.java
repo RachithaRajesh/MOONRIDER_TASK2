@@ -3,7 +3,9 @@ package com.javatechie.crud.example.controller;
 import com.javatechie.crud.example.entity.Product;
 import com.javatechie.crud.example.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -33,8 +35,15 @@ public class ProductController {
     }
 
     @GetMapping("/search")
-    public List<Product> searchProducts(@RequestParam String name) {
-        return service.searchByName(name);
+    public List<Product> enhancedSearch(
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) String category,
+            @RequestParam(required = false) Double minPrice,
+            @RequestParam(required = false) Double maxPrice) {
+        if (minPrice != null && maxPrice != null && minPrice > maxPrice) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "minPrice cannot be greater than maxPrice");
+        }
+        return service.advancedSearch(name, category, minPrice, maxPrice);
     }
 
     // Get product by ID

@@ -20,6 +20,7 @@ public class Product {
     @GeneratedValue
     private int id;
     private String name;
+    private String category;
     private int quantity;
     private double price;
 }
