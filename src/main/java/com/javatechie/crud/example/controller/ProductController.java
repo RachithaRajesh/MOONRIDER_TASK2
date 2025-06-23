@@ -32,8 +32,13 @@ public class ProductController {
         return service.getProducts();
     }
 
+    @GetMapping("/search")
+    public List<Product> searchProducts(@RequestParam String name) {
+        return service.searchByName(name);
+    }
+
     // Get product by ID
-    @GetMapping("/{id}")
+    @GetMapping("/{id:\\d+}")
     public Product findProductById(@PathVariable int id) {
         return service.getProductById(id);
     }
@@ -56,4 +61,5 @@ public class ProductController {
     public String deleteProduct(@PathVariable int id) {
         return service.deleteProduct(id);
     }
+
 }
