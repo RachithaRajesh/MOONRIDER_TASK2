@@ -35,10 +35,10 @@ spec:
             cpu: "200m"
             memory: "256Mi"
         livenessProbe:
-  httpGet:
-    path: /health
-    port: 9191
-  initialDelaySeconds: 60  # Increase from 30 to 60 or more
-  periodSeconds: 10
-  timeoutSeconds: 2
-  failureThreshold: 5
+          httpGet:
+            path: /actuator/health
+            port: 9191
+          initialDelaySeconds: 120
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
