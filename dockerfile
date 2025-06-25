@@ -16,4 +16,5 @@ ENV SERVER_PORT=9191
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
   CMD wget -q -O /dev/null http://localhost:9191/actuator/health || exit 1
 EXPOSE 9191
-ENTRYPOINT ["java", "-jar", "app.jar"]
+ENTRYPOINT ["java", "-jar", "app.jar", "--server.address=0.0.0.0"]
+

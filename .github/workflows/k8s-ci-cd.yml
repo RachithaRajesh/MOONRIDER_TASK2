@@ -62,18 +62,25 @@ jobs:
         run: |
           kubectl rollout status deployment/product-catalog-v1 -n v1-namespace --timeout=120s
 
-      - name: Run integration tests
+      ### ✅ Wait for app to become healthy
+      - name: Wait for app to be live
         run: |
-          echo "🔁 Trying endpoint at http://${{ secrets.INGRESS_IP }}/products"
+          echo "🔁 Waiting for app at http://${{ secrets.INGRESS_IP }}/actuator/health"
           for i in {1..5}; do
             echo "Attempt $i..."
-            if curl -f http://${{ secrets.INGRESS_IP }}/products; then
-              echo "✅ Integration test passed"
+            if curl -sf http://${{ secrets.INGRESS_IP }}/actuator/health | grep UP; then
+              echo "✅ App is UP"
               exit 0
             else
-              echo "❌ Attempt $i failed, retrying..."
-              sleep 5
+              echo "❌ Not ready, retrying..."
+              sleep 10
             fi
           done
-          echo "🚨 All attempts failed. Check service or endpoint path."
+          echo "🚨 App never came UP"
           exit 1
+
+      ### ✅ Final integration test
+      - name: Run integration tests
+        run: |
+          echo "🔁 Testing /products endpoint"
+          curl -f http://${{ secrets.INGRESS_IP }}/products
