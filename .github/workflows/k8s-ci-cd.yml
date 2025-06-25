@@ -67,7 +67,7 @@ jobs:
           echo "🔁 Trying endpoint at http://${{ secrets.INGRESS_IP }}/products"
           for i in {1..5}; do
             echo "Attempt $i..."
-            if curl -f http://${{ secrets.INGRESS_IP }}/v1/products; then
+            if curl -f http://${{ secrets.INGRESS_IP }}/products; then
               echo "✅ Integration test passed"
               exit 0
             else
