@@ -64,5 +64,16 @@ jobs:
 
       - name: Run integration tests
         run: |
-          sleep 10
-          curl -f http://${{ secrets.INGRESS_IP }}/v1 || exit 1
+          echo "🔁 Trying endpoint at http://${{ secrets.INGRESS_IP }}/v1/products"
+          for i in {1..5}; do
+            echo "Attempt $i..."
+            if curl -f http://${{ secrets.INGRESS_IP }}/v1/products; then
+              echo "✅ Integration test passed"
+              exit 0
+            else
+              echo "❌ Attempt $i failed, retrying..."
+              sleep 5
+            fi
+          done
+          echo "🚨 All attempts failed. Check service or endpoint path."
+          exit 1
