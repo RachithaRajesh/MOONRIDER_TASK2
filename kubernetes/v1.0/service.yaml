@@ -4,11 +4,10 @@ metadata:
   name: product-catalog-service
   namespace: v1-namespace
 spec:
-  type: NodePort
+  type: LoadBalancer
   selector:
     app: product-catalog
     version: v1.0
   ports:
     - port: 80
       targetPort: 9191
-      nodePort: 30000
