@@ -45,16 +45,20 @@ jobs:
           mkdir -p $HOME/.kube
           echo "${{ secrets.KUBECONFIG }}" > $HOME/.kube/config
 
+      - name: Confirm cluster context
+        run: |
+          kubectl config current-context
+          kubectl get nodes
+
       - name: Deploy to Kubernetes
         run: |
           kubectl apply -f kubernetes/v1.0/
-      
+
       - name: Wait for deployment rollout
         run: |
           kubectl rollout status deployment/product-catalog-v1 -n v1-namespace --timeout=120s
 
       - name: Run integration tests
         run: |
-          # Example: Use curl to hit your /v1 endpoint (repeat or expand as needed)
           sleep 10
-          curl -f http://<YOUR_INGRESS_IP>/v1 || exit 1
+          curl -f http://${{ secrets.INGRESS_IP }}/v1 || exit 1
