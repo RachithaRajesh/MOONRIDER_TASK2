@@ -1,18 +1,16 @@
 pipeline {
   agent any
   environment {
-    // Use your Docker Hub username
     DOCKER_IMAGE = "rachitharajesh/product-catalog:${env.BUILD_NUMBER}"
-    // Use your Jenkins credential ID for kubeconfig
     KUBECONFIG_CREDENTIAL_ID = 'gke-kubeconfig'
   }
   stages {
-    stage('Checkout') {
-      steps {
-        // Replace with your GitHub repo URL
-        git 'https://github.com/RachithaRajesh/MOONRIDER_TASK2.git'
-      }
-    }
+    // DELETE THIS STAGE - IT'S CAUSING THE ERROR
+    // stage('Checkout') {
+    //   steps {
+    //     git 'https://github.com/RachithaRajesh/MOONRIDER_TASK2.git'
+    //   }
+    // }
     stage('Build with Maven') {
       steps {
         sh 'mvn clean package -DskipTests'
@@ -25,7 +23,6 @@ pipeline {
     }
     stage('Push Docker Image') {
       steps {
-        // Use your Jenkins credential ID for Docker Hub
         withCredentials([usernamePassword(credentialsId: 'dockerhub', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
           sh 'echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin'
           sh 'docker push $DOCKER_IMAGE'
@@ -36,7 +33,6 @@ pipeline {
       steps {
         withCredentials([file(credentialsId: env.KUBECONFIG_CREDENTIAL_ID, variable: 'KUBECONFIG_FILE')]) {
           sh 'export KUBECONFIG=$KUBECONFIG_FILE'
-          // Update with your deployment name and container name
           sh 'kubectl set image deployment/product-catalog-v1 product-catalog=$DOCKER_IMAGE -n v1-namespace'
           sh 'kubectl apply -f kubernetes/v1.0/'
         }
@@ -45,7 +41,6 @@ pipeline {
     stage('Integration Tests') {
       steps {
         sh 'kubectl rollout status deployment/product-catalog-v1 -n v1-namespace'
-        // Use your actual Ingress IP
         sh 'curl -f http://34.49.197.94/v1 || exit 1'
       }
     }
