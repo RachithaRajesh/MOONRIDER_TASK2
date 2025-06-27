@@ -36,9 +36,17 @@ spec:
             memory: "256Mi"
         livenessProbe:
           httpGet:
-            path: /health
+            path: /actuator/health
             port: 9191
-          initialDelaySeconds: 60  # Increase from 30 to 60 or more
+          initialDelaySeconds: 60
           periodSeconds: 10
-          timeoutSeconds: 2
+          timeoutSeconds: 5
+          failureThreshold: 5
+        readinessProbe:
+          httpGet:
+            path: /actuator/health
+            port: 9191
+          initialDelaySeconds: 60
+          periodSeconds: 10
+          timeoutSeconds: 5
           failureThreshold: 5
