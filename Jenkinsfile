@@ -3,6 +3,8 @@ pipeline {
   environment {
     DOCKER_IMAGE = "rachitharajesh/product-catalog:${env.BUILD_NUMBER}"
     KUBECONFIG_CREDENTIAL_ID = 'gke-kubeconfig'
+    // Fix Windows PATH issue
+    PATH = "${env.PATH};C:\\Windows\\System32;C:\\Windows"
   }
   stages {
     stage('Build with Maven') {
